@@ -1,101 +1,119 @@
-"use client";
-
 // src/app/authentication/page.tsx
 
-import { useState } from "react";
+"use client";
 
-interface FormData {
-  name: string;
-  email: string;
-  password: string;
-  confirmPassword: string;
-}
+import { useState } from "react";
+import InputField from "../layouts/core/inputField";
+import Button from "../layouts/core/button";
+import {
+  RegisterRequestDto,
+  LoginRequestDto,
+} from "@/models/dtos/request/userRequestDto";
 
 const Authentication = () => {
-  const [formData, setFormData] = useState<FormData>({
+  const [formData, setFormData] = useState<RegisterRequestDto>({
     name: "",
     email: "",
     password: "",
     confirmPassword: "",
   });
 
+  const [loginFormData, setLoginFormData] = useState<LoginRequestDto>({
+    email: "",
+    password: "",
+  });
+
   const [isLogin, setIsLogin] = useState(true); // State to toggle between login and signup forms
-  const [emailError, setEmailError] = useState<string>("");
-  const [passwordError, setPasswordError] = useState<string>("");
-  const [confirmPasswordError, setConfirmPasswordError] = useState<string>("");
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setFormData((prevData) => ({
-      ...prevData,
-      [name]: value,
-    }));
-
-    if (!isLogin && name === "email") {
-      validateEmail(value);
-    } else if (!isLogin && name === "password") {
-      validatePassword(value);
-    } else if (name === "confirmPassword") {
-      validateConfirmPassword(value);
+    if (isLogin) {
+      setLoginFormData((prevData) => ({
+        ...prevData,
+        [name]: value,
+      }));
+    } else {
+      setFormData((prevData) => ({
+        ...prevData,
+        [name]: value,
+      }));
     }
   };
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    // Add your registration or login logic here
+  const handleSubmit = () => {
+  
     if (isLogin) {
-      // Handle login
-      console.log("Logging in with:", formData.email, formData.password);
+      console.log("Login with:", loginFormData.email, loginFormData.password);
     } else {
-      // Handle signup
       console.log(
         "Registering with:",
         formData.name,
         formData.email,
-        formData.password
+        formData.password,
+        formData.confirmPassword
       );
     }
   };
 
-  const validateEmail = (email: string) => {
+  const validateEmail = (email: string ): string | null => {
     const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!regex.test(email) && email) {
-      setEmailError("Please enter a valid email address");
-    } else {
-      setEmailError("");
-    }
+    return !regex.test(email) ? "Please enter a valid email address" : null;
   };
 
-  const validatePassword = (password: string) => {
+  const validatePassword = (password: string): string | null => {
     const regex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*]).{8,}$/;
-    if (!regex.test(password) && password) {
-      setPasswordError(
-        "Password must be at least 8 characters, include 1 digit, 1 uppercase letter, 1 lowercase letter, and 1 special character"
-      );
-    } else {
-      setPasswordError("");
-    }
+    return !regex.test(password)
+      ? "Password must be at least 8 characters, include 1 digit, 1 uppercase letter, 1 lowercase letter, and 1 special character"
+      : null;
   };
 
-  const validateConfirmPassword = (confirmPassword: string) => {
-    if (confirmPassword !== formData.password && confirmPassword) {
-      setConfirmPasswordError("Passwords do not match");
-    } else {
-      setConfirmPasswordError("");
+  const validateConfirmPassword = (confirmPassword: string): string | null => {
+    const form = isLogin ? { ...loginFormData } : { ...formData };
+
+    return confirmPassword !== form.password ? "Passwords do not match" : null;
+  };
+
+  const validateFullname = (fullname: string): string | null => {
+
+    const words = fullname.trim().split(/\s+/);
+    if (words.length < 2) {
+      return "Full name must contain at least two words";
     }
+
+    const regex = /^[a-zA-Z\s]+$/;
+    if (!regex.test(fullname)) {
+      return "Full name must not contain numbers or special characters";
+    }
+
+    return null;
   };
 
   const toggleForm = () => {
-    setIsLogin((prevState) => !prevState); // Toggle between login and signup forms
-    setEmailError(""); // Clear any existing email validation error on form toggle
-    setPasswordError(""); // Clear any existing password validation error on form toggle
-    setConfirmPasswordError(""); // Clear any existing confirmPassword validation error on form toggle
+    setIsLogin((prevState) => !prevState); 
     setFormData({
       name: "",
       email: "",
       password: "",
       confirmPassword: "",
-    }); // Clear form data on form toggle
+    });
+  };
+
+  const checkBtnDisabled = (): boolean => {
+    if (isLogin) {
+      const loginForm = loginFormData as LoginRequestDto;
+      return (
+        validateEmail(loginForm.email + "") !== null ||
+        validatePassword(loginForm.password + "") !== null
+      );
+    } else {
+      const registrationForm = formData as RegisterRequestDto;
+      return (
+        validateEmail(registrationForm.email + "") !== null ||
+        validatePassword(registrationForm.password + "") !== null ||
+        validateFullname(registrationForm.name + "") !== null ||
+        validateConfirmPassword(registrationForm.confirmPassword + "") !== null
+      );
+    }
   };
 
   return (
@@ -107,101 +125,61 @@ const Authentication = () => {
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
           <input type="hidden" name="remember" value="true" />
           {!isLogin && (
-            <div className="mb-2">
-              <label htmlFor="fullname" className="sr-only">
-                Fullname
-              </label>
-              <input
-                id="fullname"
-                name="fullname"
-                type="text"
-                required={!isLogin}
-                className="appearance-none rounded-lg relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
-                placeholder="Name"
-                value={formData.name}
-                onChange={handleChange}
-              />
-            </div>
+            <InputField
+              id="fullname"
+              name="name"
+              type="text"
+              label="Fullname"
+              placeholder="Name"
+              value={formData.name}
+              required={!isLogin}
+              onChange={handleChange}
+              checkIsvalid={validateFullname}
+            />
           )}
-          <div className="mb-2">
-            <label htmlFor="email-address" className="sr-only">
-              Email address
-            </label>
-            <input
-              id="email-address"
-              name="email"
-              type="email"
-              autoComplete="email"
-              required
-              className={`appearance-none rounded-lg relative block w-full px-3 py-2 border ${
-                emailError ? "border-red-500" : "border-gray-300"
-              } placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm`}
-              placeholder="Email address"
-              value={formData.email}
-              onChange={handleChange}
-            />
-            {emailError && (
-              <p className="mt-1 text-red-500 text-sm">{emailError}</p>
-            )}
-          </div>
-          <div className="mb-2">
-            <label htmlFor="password" className="sr-only">
-              Password
-            </label>
-            <input
-              id="password"
-              name="password"
-              type="password"
-              autoComplete="current-password"
-              required
-              className={`appearance-none rounded-lg relative block w-full px-3 py-2 border ${
-                passwordError ? "border-red-500" : "border-gray-300"
-              } placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm`}
-              placeholder="Password"
-              value={formData.password}
-              onChange={handleChange}
-            />
-            {passwordError && (
-              <p className="mt-1 text-red-500 text-sm">{passwordError}</p>
-            )}
-          </div>
+          <InputField
+            id="email-address"
+            name="email"
+            type="email"
+            label="Email address"
+            placeholder="Email address"
+            value={isLogin ? loginFormData.email : formData.email}
+            required
+            checkIsvalid={validateEmail}
+            onChange={handleChange}
+          />
+          <InputField
+            id="password"
+            name="password"
+            type="password"
+            label="Password"
+            placeholder="Password"
+            value={isLogin ? loginFormData.password : formData.password}
+            required
+            checkIsvalid={validatePassword}
+            onChange={handleChange}
+          />
           {!isLogin && (
-            <div className="mb-2">
-              <label htmlFor="confirm-password" className="sr-only">
-                Confirm Password
-              </label>
-              <input
-                id="confirm-password"
-                name="confirmPassword"
-                type="password"
-                autoComplete="current-password"
-                required={!isLogin}
-                className={`appearance-none rounded-lg relative block w-full px-3 py-2 border ${
-                  confirmPasswordError ? "border-red-500" : "border-gray-300"
-                } placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm`}
-                placeholder="Confirm Password"
-                value={formData.confirmPassword}
-                onChange={handleChange}
-              />
-              {confirmPasswordError && (
-                <p className="mt-1 text-red-500 text-sm">
-                  {confirmPasswordError}
-                </p>
-              )}
-            </div>
+            <InputField
+              id="confirm-password"
+              name="confirmPassword"
+              type="password"
+              label="Confirm Password"
+              placeholder="Confirm Password"
+              value={formData.confirmPassword}
+              required={!isLogin}
+              checkIsvalid={validateConfirmPassword}
+              onChange={handleChange}
+            />
           )}
           <div>
-            <button
-              disabled={
-                emailError !== "" ||
-                passwordError !== "" ||
-                confirmPasswordError !== ""
-              }
-              type="submit"
-              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-            >
-              {isLogin ? "Sign in" : "Register"}
-            </button>
+            <Button
+              onClick={handleSubmit}
+              color="bg-blue-600"
+              hoverColor="bg-indigo-700"
+              text={isLogin ? "Sign in" : "Register"}
+              disabled={checkBtnDisabled()}
+            ></Button>
           </div>
         </form>
         <div className="text-center text-sm">
