@@ -74,7 +74,7 @@ const AuthenticationView = () => {
             )}
             <div>
               <Button
-                onClick={controller.handleSubmit}
+                onClick={()=>controller.handleSubmit}
                 color="bg-blue-600"
                 hoverColor="bg-indigo-700"
                 text={controller.auth.isLogin ? "Sign in" : "Register"}

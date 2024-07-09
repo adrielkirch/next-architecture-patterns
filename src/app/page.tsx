@@ -1,4 +1,3 @@
-import Image from "next/image";
 
 export default function Home() {
   return (
@@ -13,8 +12,6 @@ export default function Home() {
           <a
             href="/authentication/mvvm"
             className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-            target="_blank"
-            rel="noopener noreferrer"
           >
             <h2 className="mb-3 text-2xl font-semibold">
               MVC{" "}
@@ -32,8 +29,8 @@ export default function Home() {
           <a
             href="/authentication/mvvm"
             className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-            target="_blank"
-            rel="noopener noreferrer"
+            
+           
           >
             <h2 className="mb-3 text-2xl font-semibold">
               MVVM{" "}
@@ -52,8 +49,6 @@ export default function Home() {
           <a
             href="/authentication/mvp"
             className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-            target="_blank"
-            rel="noopener noreferrer"
           >
             <h2 className="mb-3 text-2xl font-semibold">
               MVP{" "}
@@ -71,9 +66,7 @@ export default function Home() {
 
           <a
             href="/authentication/viper"
-            className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-            target="_blank"
-            rel="noopener noreferrer"
+            className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30" 
           >
             <h2 className="mb-3 text-2xl font-semibold">
               Viper{" "}

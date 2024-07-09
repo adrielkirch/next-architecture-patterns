@@ -6,9 +6,8 @@ import {
 import { login, register } from "@/requests/authRequests";
 
 import ModelAuthentication from "./model";
-import { useState } from "react";
-
-
+import { FormEvent, useState } from "react";
+import { useRouter } from "next/navigation";
 
 class AuthenticationController {
 
@@ -37,6 +36,8 @@ class AuthenticationController {
     setIsLogin: useState<React.SetStateAction<boolean>>(true)[1],
   });
 
+  public router = useRouter();
+
 
 
   handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -46,19 +47,22 @@ class AuthenticationController {
         ...prevData,
         [name]: value,
       }));
+      this.router.push('/');
     } else {
       this.auth.setRegisterFormData((prevData) => ({
         ...prevData,
         [name]: value,
       }));
+      this.auth.setIsLogin(true);
     }
   };
 
-  handleSubmit = async () => {
+  handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault(); 
     try {
       if (this.auth.isLogin) {
         const userId = await login(this.auth.loginFormData);
-        alert(`Login successful! User ID: ${userId}`);
+        alert(`Login successful! User ID: ${userId}`);''
       } else {
         const userId = await register(this.auth.registerFormData);
         alert(`Registration successful! User ID: ${userId}`);

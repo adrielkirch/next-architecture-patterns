@@ -23,8 +23,6 @@ const Authentication = () => {
 
   const [isLogin, setIsLogin] = useState(true);
 
-
-  
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     if (isLogin) {

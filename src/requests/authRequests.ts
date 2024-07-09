@@ -21,6 +21,7 @@ export const register = async (payload: RegisterRequestDto): Promise<string> => 
 
     const existingUsers = getUsersFromLocalStorage();
     const userExists = existingUsers.some(user => user.email === email);
+    
     if (userExists) {
         throw new Error('Username already exists');
     }
