@@ -8,7 +8,7 @@ interface InputFieldProps {
   placeholder: string;
   value: string | null;
   required?: boolean;
-  checkIsvalid: (value: string) => string | null;
+  checkIsvalid?: (value: string) => string | null;
   onChange: (e: ChangeEvent<HTMLInputElement>) => void;
 }
 

@@ -1,6 +1,6 @@
 
 export interface UserConstructor {
-    id?: number | null
+    id?: string | null
     email?: string | null
     name?: string | null
     password?: string | null

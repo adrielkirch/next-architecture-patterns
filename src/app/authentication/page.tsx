@@ -1,17 +1,15 @@
-// src/app/authentication/page.tsx
-
 "use client";
-
 import { useState } from "react";
-import InputField from "../layouts/core/inputField";
-import Button from "../layouts/core/button";
+import InputField from "../../app/layouts/core/inputField";
+import Button from "../../app/layouts/core/button";
 import {
   RegisterRequestDto,
   LoginRequestDto,
 } from "@/models/dtos/request/userRequestDto";
+import { login, register } from "@/requests/authRequests";
 
 const Authentication = () => {
-  const [formData, setFormData] = useState<RegisterRequestDto>({
+  const [registerFormData, setRegisterFormData] = useState<RegisterRequestDto>({
     name: "",
     email: "",
     password: "",
@@ -23,8 +21,10 @@ const Authentication = () => {
     password: "",
   });
 
-  const [isLogin, setIsLogin] = useState(true); // State to toggle between login and signup forms
+  const [isLogin, setIsLogin] = useState(true);
 
+
+  
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     if (isLogin) {
@@ -33,29 +33,30 @@ const Authentication = () => {
         [name]: value,
       }));
     } else {
-      setFormData((prevData) => ({
+      setRegisterFormData((prevData) => ({
         ...prevData,
         [name]: value,
       }));
     }
   };
 
-  const handleSubmit = () => {
-  
-    if (isLogin) {
-      console.log("Login with:", loginFormData.email, loginFormData.password);
-    } else {
-      console.log(
-        "Registering with:",
-        formData.name,
-        formData.email,
-        formData.password,
-        formData.confirmPassword
-      );
+  const handleSubmit = async () => {
+    try {
+      if (isLogin) {
+        const userId = await login(loginFormData);
+        alert(`Login successful! User ID: ${userId}`);
+      } else {
+        const userId = await register(registerFormData);
+        alert(`Registration successful! User ID: ${userId}`);
+      }
+    } catch (error: any) {
+      if (error instanceof Error) {
+        alert(`${error}`);
+      }
     }
   };
 
-  const validateEmail = (email: string ): string | null => {
+  const validateEmail = (email: string): string | null => {
     const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return !regex.test(email) ? "Please enter a valid email address" : null;
   };
@@ -68,29 +69,13 @@ const Authentication = () => {
   };
 
   const validateConfirmPassword = (confirmPassword: string): string | null => {
-    const form = isLogin ? { ...loginFormData } : { ...formData };
-
+    const form = isLogin ? loginFormData : registerFormData;
     return confirmPassword !== form.password ? "Passwords do not match" : null;
   };
 
-  const validateFullname = (fullname: string): string | null => {
-
-    const words = fullname.trim().split(/\s+/);
-    if (words.length < 2) {
-      return "Full name must contain at least two words";
-    }
-
-    const regex = /^[a-zA-Z\s]+$/;
-    if (!regex.test(fullname)) {
-      return "Full name must not contain numbers or special characters";
-    }
-
-    return null;
-  };
-
   const toggleForm = () => {
-    setIsLogin((prevState) => !prevState); 
-    setFormData({
+    setIsLogin((prevState) => !prevState);
+    setRegisterFormData({
       name: "",
       email: "",
       password: "",
@@ -102,16 +87,15 @@ const Authentication = () => {
     if (isLogin) {
       const loginForm = loginFormData as LoginRequestDto;
       return (
-        validateEmail(loginForm.email + "") !== null ||
-        validatePassword(loginForm.password + "") !== null
+        validateEmail(String(loginForm.email)) !== null ||
+        validatePassword(String(loginForm.password)) !== null
       );
     } else {
-      const registrationForm = formData as RegisterRequestDto;
+      const registrationForm = registerFormData as RegisterRequestDto;
       return (
-        validateEmail(registrationForm.email + "") !== null ||
-        validatePassword(registrationForm.password + "") !== null ||
-        validateFullname(registrationForm.name + "") !== null ||
-        validateConfirmPassword(registrationForm.confirmPassword + "") !== null
+        validateEmail(String(registrationForm.email)) !== null ||
+        validatePassword(String(registrationForm.password)) !== null ||
+        validateConfirmPassword(String(registrationForm.confirmPassword)) !== null
       );
     }
   };
@@ -131,10 +115,10 @@ const Authentication = () => {
               type="text"
               label="Fullname"
               placeholder="Name"
-              value={formData.name}
+              value={registerFormData.name}
               required={!isLogin}
               onChange={handleChange}
-              checkIsvalid={validateFullname}
+              checkIsvalid={validateEmail}
             />
           )}
           <InputField
@@ -143,7 +127,7 @@ const Authentication = () => {
             type="email"
             label="Email address"
             placeholder="Email address"
-            value={isLogin ? loginFormData.email : formData.email}
+            value={isLogin ? loginFormData.email : registerFormData.email}
             required
             checkIsvalid={validateEmail}
             onChange={handleChange}
@@ -154,7 +138,7 @@ const Authentication = () => {
             type="password"
             label="Password"
             placeholder="Password"
-            value={isLogin ? loginFormData.password : formData.password}
+            value={isLogin ? loginFormData.password : registerFormData.password}
             required
             checkIsvalid={validatePassword}
             onChange={handleChange}
@@ -166,7 +150,7 @@ const Authentication = () => {
               type="password"
               label="Confirm Password"
               placeholder="Confirm Password"
-              value={formData.confirmPassword}
+              value={registerFormData.confirmPassword}
               required={!isLogin}
               checkIsvalid={validateConfirmPassword}
               onChange={handleChange}
@@ -179,7 +163,7 @@ const Authentication = () => {
               hoverColor="bg-indigo-700"
               text={isLogin ? "Sign in" : "Register"}
               disabled={checkBtnDisabled()}
-            ></Button>
+            />
           </div>
         </form>
         <div className="text-center text-sm">
