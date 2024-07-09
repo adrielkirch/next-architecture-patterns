@@ -6,8 +6,6 @@ import {
 import { login, register } from "@/requests/authRequests";
 import ModelAuthentication from "./model";
 
-
-
 class AuthenticationPresenter {
   public auth = new ModelAuthentication({
     registerFormData: {
