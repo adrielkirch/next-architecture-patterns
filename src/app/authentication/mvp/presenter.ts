@@ -1,7 +1,7 @@
 import { RegisterRequestDto, LoginRequestDto } from "@/models/dtos/request/userRequestDto";
 import { login, register } from "@/requests/authRequests";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { FormEvent, useState } from "react";
 
 const useAuthenticationPresenter = () => {
   const [registerFormData, setRegisterFormData] = useState<RegisterRequestDto>({
@@ -34,22 +34,22 @@ const useAuthenticationPresenter = () => {
     }
   };
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+  const handleSubmit = async () => {
+  
     try {
       if (isLogin) {
         const userId = await login(loginFormData);
         alert(`Login successful! User ID: ${userId}`);
-        router.push("/");
       } else {
         const userId = await register(registerFormData);
         alert(`Registration successful! User ID: ${userId}`);
-        setIsLogin(true);
+
       }
-    } catch (error) {
+    } catch (error: any) {
       alert(`${error}`);
     }
   };
+  
 
   const validateEmail = (email: string): string | null => {
     const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
