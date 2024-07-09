@@ -6,6 +6,7 @@ interface ButtonProps {
   onClick: () => void;
   text: string;
   disabled?: boolean;
+  type?: string;
 }
 
 const Button: React.FC<ButtonProps> = ({ color, hoverColor, onClick, text, disabled = false }) => {

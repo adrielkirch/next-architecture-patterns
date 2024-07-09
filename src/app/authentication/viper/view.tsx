@@ -1,32 +1,37 @@
-"use client";
-
-import InputField from "../../layouts/core/inputField";
-import Button from "../../layouts/core/button";
-import useAuthenticationViewModel from "./viewModel";
+import InputField from "../../../app/layouts/core/inputField";
+import Button from "../../../app/layouts/core/button";
+import useAuthenticationPresenter from "./presenter";
 
 const AuthenticationView = () => {
-  const viewModel = useAuthenticationViewModel();
+  const {
+    handleChange,
+    handleSubmit,
+    toggleForm,
+    getFormData,
+  } = useAuthenticationPresenter();
+
+  
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-black-50 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full space-y-8 border border-white-100 rounded-lg px-6 py-6">
         <h2 className="mt-6 text-center text-3xl font-extrabold text-white">
-          {viewModel.isLogin
+          {getFormData().isLogin
             ? "Sign in to your account"
             : "Create your account"}
         </h2>
-        <form className="mt-8 space-y-6" onSubmit={viewModel.handleSubmit}>
+        <form className="mt-8 space-y-6">
           <input type="hidden" name="remember" value="true" />
-          {!viewModel.isLogin && (
+          {!getFormData().isLogin && (
             <InputField
               id="fullname"
               name="name"
               type="text"
               label="Fullname"
               placeholder="Name"
-              value={viewModel.registerFormData.name}
-              required={!viewModel.isLogin}
-              onChange={viewModel.handleChange}
+              value={getFormData().registerFormData.name}
+              required={!getFormData().isLogin}
+              onChange={handleChange}
             />
           )}
           <InputField
@@ -36,13 +41,12 @@ const AuthenticationView = () => {
             label="Email address"
             placeholder="Email address"
             value={
-              viewModel.isLogin
-                ? viewModel.loginFormData.email
-                : viewModel.registerFormData.email
+              getFormData().isLogin
+                ? getFormData().loginFormData.email
+                : getFormData().registerFormData.email
             }
             required
-            checkIsvalid={viewModel.validateEmail}
-            onChange={viewModel.handleChange}
+            onChange={handleChange}
           />
           <InputField
             id="password"
@@ -51,44 +55,46 @@ const AuthenticationView = () => {
             label="Password"
             placeholder="Password"
             value={
-              viewModel.isLogin
-                ? viewModel.loginFormData.password
-                : viewModel.registerFormData.password
+              getFormData().isLogin
+                ? getFormData().loginFormData.password
+                : getFormData().registerFormData.password
             }
             required
-            checkIsvalid={viewModel.validatePassword}
-            onChange={viewModel.handleChange}
+            onChange={handleChange}
           />
-          {!viewModel.isLogin && (
+          {!getFormData().isLogin && (
             <InputField
               id="confirm-password"
               name="confirmPassword"
               type="password"
               label="Confirm Password"
               placeholder="Confirm Password"
-              value={viewModel.registerFormData.confirmPassword}
-              required={!viewModel.isLogin}
-              checkIsvalid={viewModel.validateConfirmPassword}
-              onChange={viewModel.handleChange}
+              value={getFormData().registerFormData.confirmPassword}
+              required={!getFormData().isLogin}
+              onChange={handleChange}
             />
           )}
           <div>
             <Button
-              onClick={() => viewModel.handleSubmit}
+              onClick={handleSubmit}
               color="bg-blue-600"
               hoverColor="bg-indigo-700"
-              text={viewModel.isLogin ? "Sign in" : "Register"}
-              disabled={viewModel.checkBtnDisabled()}
+              text={getFormData().isLogin ? "Sign in" : "Register"}
+              // disabled={!validateForm(
+              //   getFormData().isLogin,
+              //   getFormData().loginFormData,
+              //   getFormData().registerFormData
+              // )}
             />
           </div>
         </form>
         <div className="text-center text-sm">
-          {viewModel.isLogin ? (
+          {getFormData().isLogin ? (
             <p>
               Don&apos;t have an account?{" "}
               <span
                 className="text-blue-500 cursor-pointer"
-                onClick={viewModel.toggleForm}
+                onClick={toggleForm}
               >
                 Sign up
               </span>
@@ -98,7 +104,7 @@ const AuthenticationView = () => {
               Already have an account?{" "}
               <span
                 className="text-blue-500 cursor-pointer"
-                onClick={viewModel.toggleForm}
+                onClick={toggleForm}
               >
                 Sign in
               </span>

@@ -5,10 +5,10 @@ import {
     LoginRequestDto,
 } from "@/models/dtos/request/userRequestDto";
 import { login, register } from "@/requests/authRequests";
-import ModelAuthentication from "./model";
+import AuthenticationModel from "./model";
 import { useRouter } from "next/navigation";
 
-const useAuthenticationViewModel = (): ModelAuthentication => {
+const useAuthenticationViewModel = (): AuthenticationModel => {
     const router = useRouter();
     const [registerFormData, setRegisterFormData] = useState<RegisterRequestDto>({
         name: "",
@@ -30,13 +30,13 @@ const useAuthenticationViewModel = (): ModelAuthentication => {
                 ...prevData,
                 [name]: value,
             }));
-            router.push('/');
+
         } else {
             setRegisterFormData((prevData) => ({
                 ...prevData,
                 [name]: value,
             }));
-            setIsLogin(true);
+
         }
     };
 
@@ -47,9 +47,11 @@ const useAuthenticationViewModel = (): ModelAuthentication => {
             if (isLogin) {
                 const userId = await login(loginFormData);
                 alert(`Login successful! User ID: ${userId}`);
+                router.push('/');
             } else {
                 const userId = await register(registerFormData);
                 alert(`Registration successful! User ID: ${userId}`);
+                setIsLogin(true);
             }
         } catch (error: any) {
             if (error instanceof Error) {

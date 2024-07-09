@@ -16,3 +16,6 @@ export const setIdLoggedIn = (id:string): void => {
 export const getSession = (): string => {
     return String(localStorage.getItem("id"));
 };
+export const killAll = (): void => {
+  localStorage.clear();
+};

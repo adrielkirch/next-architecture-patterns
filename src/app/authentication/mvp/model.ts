@@ -1,18 +1,18 @@
 import { RegisterRequestDto, LoginRequestDto } from "@/models/dtos/request/userRequestDto";
 
-interface ModelAuthenticationConstructor {
+interface AuthenticationModelConstructor {
   registerFormData: RegisterRequestDto;
   loginFormData: LoginRequestDto;
   isLogin: boolean;
 
 }
 
-export default class ModelAuthentication {
+export default class AuthenticationModel {
   public registerFormData: RegisterRequestDto;
   public loginFormData: LoginRequestDto;
   public isLogin: boolean;
 
-  constructor(props: ModelAuthenticationConstructor) {
+  constructor(props: AuthenticationModelConstructor) {
     this.registerFormData = props.registerFormData;
     this.loginFormData = props.loginFormData;
     this.isLogin = props.isLogin;
@@ -26,7 +26,6 @@ export default class ModelAuthentication {
     return this.loginFormData;
   }
 
-  // Setters for form data
   public setRegisterFormData(formData: RegisterRequestDto): void {
     this.registerFormData = formData;
   }
@@ -35,7 +34,6 @@ export default class ModelAuthentication {
     this.loginFormData = formData;
   }
 
-  // Getter and setter for isLogin
   public getIsLogin(): boolean {
     return this.isLogin;
   }

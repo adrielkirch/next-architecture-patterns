@@ -5,13 +5,13 @@ import {
 } from "@/models/dtos/request/userRequestDto";
 import { login, register } from "@/requests/authRequests";
 
-import ModelAuthentication from "./model";
+import AuthenticationModel from "./model";
 import { FormEvent, useState } from "react";
 import { useRouter } from "next/navigation";
 
 class AuthenticationController {
 
-  public auth: ModelAuthentication = new ModelAuthentication({
+  public auth: AuthenticationModel = new AuthenticationModel({
     registerFormData: {
       name: "",
       email: "",
@@ -38,8 +38,6 @@ class AuthenticationController {
 
   public router = useRouter();
 
-
-
   handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     if (this.auth.isLogin) {
@@ -47,13 +45,13 @@ class AuthenticationController {
         ...prevData,
         [name]: value,
       }));
-      this.router.push('/');
+
     } else {
       this.auth.setRegisterFormData((prevData) => ({
         ...prevData,
         [name]: value,
       }));
-      this.auth.setIsLogin(true);
+     
     }
   };
 
@@ -63,9 +61,11 @@ class AuthenticationController {
       if (this.auth.isLogin) {
         const userId = await login(this.auth.loginFormData);
         alert(`Login successful! User ID: ${userId}`);''
+        this.router.push('/');
       } else {
         const userId = await register(this.auth.registerFormData);
         alert(`Registration successful! User ID: ${userId}`);
+        this.auth.setIsLogin(true);
       }
     } catch (error: any) {
       if (error instanceof Error) {

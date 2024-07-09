@@ -1,7 +1,7 @@
 import { RegisterRequestDto, LoginRequestDto } from "@/models/dtos/request/userRequestDto";
 import { Dispatch, FormEvent, SetStateAction } from "react";
 
-interface ModelAuthenticationConstructor {
+interface AuthenticationModelConstructor {
     registerFormData: RegisterRequestDto;
     loginFormData: LoginRequestDto;
     isLogin: boolean;
@@ -10,15 +10,15 @@ interface ModelAuthenticationConstructor {
     setIsLogin: Dispatch<SetStateAction<boolean>>;
     handleChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
     checkBtnDisabled: () => boolean;
-    validateConfirmPassword: (value: string) =>  string | null;
-    validatePassword: (value: string) =>  string | null;
-    validateEmail: (value: string) =>  string | null;
+    validateConfirmPassword: (value: string) => string | null;
+    validatePassword: (value: string) => string | null;
+    validateEmail: (value: string) => string | null;
     handleSubmit: (e: FormEvent<HTMLFormElement>) => void;
     toggleForm: () => void;
 
 }
 
-export default class ModelAuthentication {
+export default class AuthenticationModel {
     public registerFormData: RegisterRequestDto;
     public loginFormData: LoginRequestDto;
     public isLogin: boolean;
@@ -30,10 +30,10 @@ export default class ModelAuthentication {
     public validateConfirmPassword: (value: string) => string | null;
     public validatePassword: (value: string) => string | null;
     public validateEmail: (value: string) => string | null;
-    handleSubmit: (e: FormEvent<HTMLFormElement>) => void;
+    public handleSubmit: (e: FormEvent<HTMLFormElement>) => void;
     public toggleForm: () => void;
 
-    constructor(props: ModelAuthenticationConstructor) {
+    constructor(props: AuthenticationModelConstructor) {
         this.registerFormData = props.registerFormData;
         this.loginFormData = props.loginFormData;
         this.isLogin = props.isLogin;

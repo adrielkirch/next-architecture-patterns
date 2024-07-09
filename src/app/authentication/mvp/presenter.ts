@@ -1,81 +1,78 @@
-
-import {
-  RegisterRequestDto,
-  LoginRequestDto,
-} from "@/models/dtos/request/userRequestDto";
+import { RegisterRequestDto, LoginRequestDto } from "@/models/dtos/request/userRequestDto";
 import { login, register } from "@/requests/authRequests";
-import ModelAuthentication from "./model";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 
-class AuthenticationPresenter {
-  public auth = new ModelAuthentication({
-    registerFormData: {
-      name: "",
-      email: "",
-      password: "",
-      confirmPassword: "",
-    },
-    loginFormData: {
-      email: "",
-      password: "",
-    },
-    isLogin: true,
+const useAuthenticationPresenter = () => {
+  const [registerFormData, setRegisterFormData] = useState<RegisterRequestDto>({
+    name: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
   });
 
-  handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const [loginFormData, setLoginFormData] = useState<LoginRequestDto>({
+    email: "",
+    password: "",
+  });
+
+  const [isLogin, setIsLogin] = useState(true);
+  const router = useRouter();
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    if (this.auth.getIsLogin()) {
-      const updatedFormData: LoginRequestDto = {
-        ...this.auth.getLoginFormData(),
+    if (isLogin) {
+      setLoginFormData((prevFormData) => ({
+        ...prevFormData,
         [name]: value,
-      };
-      this.auth.setLoginFormData(updatedFormData);
+      }));
     } else {
-      const updatedFormData: RegisterRequestDto = {
-        ...this.auth.getRegisterFormData(),
+      setRegisterFormData((prevFormData) => ({
+        ...prevFormData,
         [name]: value,
-      };
-      this.auth.setRegisterFormData(updatedFormData);
+      }));
     }
   };
 
-  handleSubmit = async () => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
     try {
-      if (this.auth.getIsLogin()) {
-        const userId = await login(this.auth.getLoginFormData());
+      if (isLogin) {
+        const userId = await login(loginFormData);
         alert(`Login successful! User ID: ${userId}`);
+        router.push("/");
       } else {
-        const userId = await register(this.auth.getRegisterFormData());
+        const userId = await register(registerFormData);
         alert(`Registration successful! User ID: ${userId}`);
+        setIsLogin(true);
       }
-    } catch (error: any) {
-      if (error instanceof Error) {
-        alert(`${error}`);
-      }
+    } catch (error) {
+      alert(`${error}`);
     }
   };
 
-  validateEmail = (email: string): string | null => {
+  const validateEmail = (email: string): string | null => {
     const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return !regex.test(email) ? "Please enter a valid email address" : null;
   };
 
-  validatePassword = (password: string): string | null => {
+  const validatePassword = (password: string): string | null => {
     const regex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*]).{8,}$/;
     return !regex.test(password)
       ? "Password must be at least 8 characters, include 1 digit, 1 uppercase letter, 1 lowercase letter, and 1 special character"
       : null;
   };
 
-  validateConfirmPassword = (confirmPassword: string): string | null => {
-    const form = this.auth.getIsLogin()
-      ? this.auth.getLoginFormData()
-      : this.auth.getRegisterFormData();
-    return confirmPassword !== form.password ? "Passwords do not match" : null;
+  const validateConfirmPassword = (confirmPassword: string): string => {
+    return confirmPassword !== registerFormData.password
+      ? "Passwords do not match"
+      : "";
   };
 
-  toggleForm = () => {
-    this.auth.setIsLogin(!this.auth.getIsLogin());
-    this.auth.setRegisterFormData({
+
+  const toggleForm = () => {
+    setIsLogin(!isLogin);
+    setRegisterFormData({
       name: "",
       email: "",
       password: "",
@@ -83,24 +80,35 @@ class AuthenticationPresenter {
     });
   };
 
-  checkBtnDisabled = (): boolean => {
-    if (this.auth.getIsLogin()) {
-      const loginForm = this.auth.getLoginFormData() as LoginRequestDto;
+  const checkBtnDisabled = (): boolean => {
+    if (isLogin) {
       return (
-        this.validateEmail(String(loginForm.email)) !== null ||
-        this.validatePassword(String(loginForm.password)) !== null
+        validateEmail(String(loginFormData.email)) !== null ||
+        validatePassword(String(loginFormData.password)) !== null
       );
     } else {
-      const registrationForm = this.auth.getRegisterFormData() as RegisterRequestDto;
       return (
-        this.validateEmail(String(registrationForm.email)) !== null ||
-        this.validatePassword(String(registrationForm.password)) !== null ||
-        this.validateConfirmPassword(String(registrationForm.confirmPassword)) !==
-        null
+        validateEmail(String(registerFormData.email)) !== null ||
+        validatePassword(String(registerFormData.password)) !== null ||
+        validateConfirmPassword(String(registerFormData.confirmPassword)) !== null
       );
     }
   };
 
+
+  return {
+    isLogin,
+    handleChange,
+    handleSubmit,
+    validateEmail,
+    validatePassword,
+    validateConfirmPassword,
+    toggleForm,
+    checkBtnDisabled,
+    registerFormData,
+    loginFormData
+
+  };
 };
 
-export default AuthenticationPresenter;
+export default useAuthenticationPresenter;
