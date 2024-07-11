@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { FormEvent, useState } from "react";
 import InputField from "../../app/layouts/core/inputField";
 import Button from "../../app/layouts/core/button";
 import {
@@ -38,7 +38,8 @@ const Authentication = () => {
     }
   };
 
-  const handleSubmit = async () => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
     try {
       if (isLogin) {
         const userId = await login(loginFormData);
@@ -156,7 +157,6 @@ const Authentication = () => {
           )}
           <div>
             <Button
-              onClick={handleSubmit}
               color="bg-blue-600"
               hoverColor="bg-indigo-700"
               text={isLogin ? "Sign in" : "Register"}

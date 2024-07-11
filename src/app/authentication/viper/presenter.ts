@@ -1,35 +1,50 @@
-import { useState } from 'react';
+import { FormEvent, useEffect, useState } from 'react';
 import { RegisterRequestDto, LoginRequestDto } from "@/models/dtos/request/userRequestDto";
 import useAuthenticationInteractor from "./interactor";
 import useAuthenticationRouter from "./router";
 
 const useAuthenticationPresenter = () => {
-  const interactor = useAuthenticationInteractor();
-  const { goToHomePage } = useAuthenticationRouter();
+  const { auth, loginAccount, registerAccount, validateEmail, validatePassword, validateConfirmPassword, } = useAuthenticationInteractor();
 
-  const handleSubmit = async () => {
+  const { goToHomePage } = useAuthenticationRouter();
+  const [isDisabled, setIsDisabled] = useState<boolean>(false);
+
+  const [inputErrorEmail, setInputErrorEmail] = useState<string | null>(null);
+  const [inputErrorPassword, setInputErrorPassword] = useState<string | null>(null);
+  const [inputErrorPasswordConfirm, setInputErrorPasswordConfirm] = useState<string | null>(null);
+
+
+  useEffect(() => {
+    checkBtnDisabled();
+  }, [auth.registerFormData, auth.loginFormData])
+
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
     try {
-      const formData = getFormData();
-      if (formData.isLogin) {
-        await interactor.login();
+
+      if (getFormData().isLogin) {
+        const userId = await loginAccount();
+        alert(`Login successful! User ID: ${userId}`);
         goToHomePage();
       } else {
-        await interactor.register();
+        const userId = await registerAccount();
+        alert(`Registration successful! User ID: ${userId}`);
+        auth.setIsLogin(true);
       }
-    } catch (error:any) {
-      throw new Error(error);
+    } catch (error: any) {
+      alert(`${error}`);
     }
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     if (getFormData().isLogin) {
-      interactor.auth.setLoginFormData({
+      auth.setLoginFormData({
         ...getFormData().loginFormData,
         [name]: value,
       });
     } else {
-      interactor.auth.setRegisterFormData({
+      auth.setRegisterFormData({
         ...getFormData().registerFormData,
         [name]: value,
       });
@@ -37,54 +52,58 @@ const useAuthenticationPresenter = () => {
   };
 
   const toggleForm = () => {
-    alert("Toggle");
-    interactor.auth.setIsLogin(!interactor.auth.isLogin);
+    auth.setIsLogin(!auth.isLogin);
     resetFormData();
   };
 
   const resetFormData = () => {
-    interactor.auth.setRegisterFormData({
+    auth.setRegisterFormData({
       name: "",
       email: "",
       password: "",
       confirmPassword: "",
     });
-   
-    interactor.auth.setLoginFormData({  
+
+    auth.setLoginFormData({
       email: "",
       password: "",
     });
   };
 
   const getFormData = () => {
-    return interactor.auth;
+    return auth;
   };
 
-  const validateForm = (isLogin: boolean, loginData: LoginRequestDto, registerData: RegisterRequestDto): boolean => {
-    if (isLogin) {
-      return (
-        interactor.validateEmail(String(loginData.email)) === null &&
-        interactor.validatePassword(String(loginData.password)) === null
-      );
-    } else {
-      return (
-        interactor.validateEmail(String(registerData.email)) === null &&
-        interactor.validatePassword(String(registerData.password)) === null &&
-        interactor.validateConfirmPassword(String(registerData.password), String(registerData.confirmPassword)) === null
-      );
+  const checkBtnDisabled = (): void => {
+    if (auth.isLogin) {
+      setIsDisabled(false);
+      setInputErrorEmail(null);
+      setInputErrorEmail(null);
+      setInputErrorEmail(null);
+      return
     }
-  };
+    const invalidEmail = validateEmail() !== null;
+    const invalidPassword = validatePassword() !== null;
+    const invalidConfirmPassword = validateConfirmPassword() !== null;
 
-  // Define other necessary properties or methods based on your needs
+    setInputErrorEmail(validateEmail());
+    setInputErrorPassword(validatePassword());
+    setInputErrorPasswordConfirm(validateConfirmPassword());
+
+    const disable = invalidEmail || invalidPassword || invalidConfirmPassword
+    setIsDisabled(disable);
+  };
 
   return {
     handleSubmit,
     toggleForm,
     resetFormData,
     getFormData,
-    validateForm,
+    isDisabled,
     handleChange,
-    // Add other properties/methods as needed
+    inputErrorPasswordConfirm,
+    inputErrorPassword,
+    inputErrorEmail,
   };
 };
 

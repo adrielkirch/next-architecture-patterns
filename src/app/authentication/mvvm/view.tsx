@@ -74,7 +74,6 @@ const AuthenticationView = () => {
           )}
           <div>
             <Button
-              onClick={() => viewModel.handleSubmit}
               color="bg-blue-600"
               hoverColor="bg-indigo-700"
               text={viewModel.isLogin ? "Sign in" : "Register"}

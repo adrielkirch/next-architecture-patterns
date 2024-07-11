@@ -12,7 +12,7 @@ export const login = async (payload: LoginRequestDto): Promise<string> => {
         setIdLoggedIn(id);
         return id;
     } else {
-        throw new Error('Username not found');
+        throw new Error('Username or Password not found');
     }
 }
 

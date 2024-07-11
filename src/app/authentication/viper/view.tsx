@@ -8,9 +8,11 @@ const AuthenticationView = () => {
     handleSubmit,
     toggleForm,
     getFormData,
+    isDisabled,
+    inputErrorEmail,
+    inputErrorPasswordConfirm,
+    inputErrorPassword,
   } = useAuthenticationPresenter();
-
-  
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-black-50 py-12 px-4 sm:px-6 lg:px-8">
@@ -20,7 +22,7 @@ const AuthenticationView = () => {
             ? "Sign in to your account"
             : "Create your account"}
         </h2>
-        <form className="mt-8 space-y-6">
+        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
           <input type="hidden" name="remember" value="true" />
           {!getFormData().isLogin && (
             <InputField
@@ -47,6 +49,9 @@ const AuthenticationView = () => {
             }
             required
             onChange={handleChange}
+            checkIsvalid={() => {
+              return inputErrorEmail;
+            }}
           />
           <InputField
             id="password"
@@ -61,6 +66,9 @@ const AuthenticationView = () => {
             }
             required
             onChange={handleChange}
+            checkIsvalid={() => {
+              return inputErrorPassword;
+            }}
           />
           {!getFormData().isLogin && (
             <InputField
@@ -72,19 +80,17 @@ const AuthenticationView = () => {
               value={getFormData().registerFormData.confirmPassword}
               required={!getFormData().isLogin}
               onChange={handleChange}
+              checkIsvalid={() => {
+                return inputErrorPasswordConfirm;
+              }}
             />
           )}
           <div>
             <Button
-              onClick={handleSubmit}
               color="bg-blue-600"
               hoverColor="bg-indigo-700"
               text={getFormData().isLogin ? "Sign in" : "Register"}
-              // disabled={!validateForm(
-              //   getFormData().isLogin,
-              //   getFormData().loginFormData,
-              //   getFormData().registerFormData
-              // )}
+              disabled={isDisabled}
             />
           </div>
         </form>

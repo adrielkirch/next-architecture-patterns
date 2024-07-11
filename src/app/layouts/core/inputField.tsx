@@ -20,7 +20,6 @@ const InputField: React.FC<InputFieldProps> = ({
   placeholder,
   value,
   required = false,
- 
   checkIsvalid,
   onChange,
 }) => {

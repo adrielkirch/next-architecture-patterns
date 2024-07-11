@@ -13,6 +13,7 @@ const AuthenticationView: React.FC = () => {
     validatePassword,
     validateConfirmPassword,
     toggleForm,
+    isDisabled,
     checkBtnDisabled,
   } = useAuthenticationPresenter();
 
@@ -22,7 +23,7 @@ const AuthenticationView: React.FC = () => {
         <h2 className="mt-6 text-center text-3xl font-extrabold text-white">
           {isLogin ? "Sign in to your account" : "Create your account"}
         </h2>
-        <form className="mt-8 space-y-6">
+        <form className="mt-8 space-y-6"  onSubmit={handleSubmit}>
           <input type="hidden" name="remember" value="true" />
           {!isLogin && (
             <InputField
@@ -74,11 +75,10 @@ const AuthenticationView: React.FC = () => {
           )}
           <div>
             <Button
-              onClick={handleSubmit}
               color="bg-blue-600"
               hoverColor="bg-indigo-700"
               text={isLogin ? "Sign in" : "Register"}
-              disabled={false}
+              disabled={isLogin ? false : isDisabled}
             />
           </div>
         </form>
