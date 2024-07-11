@@ -4,11 +4,10 @@ import useAuthenticationInteractor from "./interactor";
 import useAuthenticationRouter from "./router";
 
 const useAuthenticationPresenter = () => {
-  const { auth, loginAccount, registerAccount, validateEmail, validatePassword, validateConfirmPassword, } = useAuthenticationInteractor();
-
+  const { auth, loginAccount, registerAccount } = useAuthenticationInteractor();
   const { goToHomePage } = useAuthenticationRouter();
-  const [isDisabled, setIsDisabled] = useState<boolean>(false);
 
+  const [isDisabled, setIsDisabled] = useState<boolean>(false);
   const [inputErrorEmail, setInputErrorEmail] = useState<string | null>(null);
   const [inputErrorPassword, setInputErrorPassword] = useState<string | null>(null);
   const [inputErrorPasswordConfirm, setInputErrorPasswordConfirm] = useState<string | null>(null);
@@ -73,6 +72,28 @@ const useAuthenticationPresenter = () => {
   const getFormData = () => {
     return auth;
   };
+
+  const validateEmail = (): string | null => {
+    if (!auth.registerFormData.email || auth.isLogin) return null;
+    const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return !regex.test(auth.registerFormData.email) ? "Please enter a valid email address" : null;
+  };
+
+  const validatePassword = (): string | null => {
+    if (!auth.registerFormData.password || auth.isLogin) return null;
+    const regex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*]).{8,}$/;
+    return !regex.test(auth.registerFormData.password)
+      ? "Password must be at least 8 characters, include 1 digit, 1 uppercase letter, 1 lowercase letter, and 1 special character"
+      : null;
+  };
+
+  const validateConfirmPassword = (): string | null => {
+    if (!auth.registerFormData.confirmPassword) return auth.registerFormData.confirmPassword;
+    return auth.registerFormData.confirmPassword !== auth.registerFormData.password
+      ? "Passwords do not match"
+      : null;
+  };
+
 
   const checkBtnDisabled = (): void => {
     if (auth.isLogin) {

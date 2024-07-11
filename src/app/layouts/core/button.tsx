@@ -1,4 +1,5 @@
-import React, { FormEvent } from 'react';
+"use client"
+import React from 'react';
 
 interface ButtonProps {
   color: string;

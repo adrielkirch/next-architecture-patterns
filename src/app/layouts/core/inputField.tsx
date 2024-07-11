@@ -1,4 +1,4 @@
-import React, { useState, ChangeEvent } from 'react';
+import React, { useState, ChangeEvent, useEffect } from 'react';
 
 interface InputFieldProps {
   id: string;
@@ -28,14 +28,24 @@ const InputField: React.FC<InputFieldProps> = ({
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { value } = e.target;
     onChange(e);
+    if (checkIsvalid && value) {
+      const validationError = checkIsvalid(value);
+      console.log("validationError"," ",validationError)
+      setError(validationError);
+    } else {
+      setError(null);
+    }
+  };
 
+  useEffect(() => {
     if (checkIsvalid && value) {
       const validationError = checkIsvalid(value);
       setError(validationError);
     } else {
       setError(null);
     }
-  };
+  }, [checkIsvalid, value]);
+
   return (
     <div className="mb-2">
       <label htmlFor={id} className="sr-only">

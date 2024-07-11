@@ -1,6 +1,7 @@
 import InputField from "../../../app/layouts/core/inputField";
 import Button from "../../../app/layouts/core/button";
 import useAuthenticationPresenter from "./presenter";
+import { useEffect } from "react";
 
 const AuthenticationView = () => {
   const {
@@ -13,6 +14,10 @@ const AuthenticationView = () => {
     inputErrorPasswordConfirm,
     inputErrorPassword,
   } = useAuthenticationPresenter();
+
+  useEffect(() => {
+    console.log("inputErrorPassword ->", inputErrorPassword)
+  }, [inputErrorPassword]);
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-black-50 py-12 px-4 sm:px-6 lg:px-8">

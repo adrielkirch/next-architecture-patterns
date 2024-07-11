@@ -1,3 +1,4 @@
+
 export default function Home() {
   return (
     <main className="flex min-h-screen flex-col items-center justify-between p-24">
@@ -5,8 +6,6 @@ export default function Home() {
         <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl">
           Explore Front-end Architectural Patterns
         </h1>
-
-        
       </div>
       <div className="flex flex-col mt-5">
         <div className="mb-32 grid text-center lg:mb-0 lg:w-full lg:max-w-6xl lg:grid-cols-4 lg:text-left">
